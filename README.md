@@ -1,2 +1,4 @@
-# advent-of-code-2018
-Solutions for Advent of Code 2018 in Clojure
+# Advent of Code 2018
+
+My Solutions for Advent of Code 2018 using Clojure
+https://adventofcode.com/2018
