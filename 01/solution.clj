@@ -2,7 +2,9 @@
 
 (def input (slurp "./input.txt"))
 
-(->> input
-     (clojure.string/split-lines)
-     (map read-string)
-     (reduce +))
+(def data
+  (->> input
+       (clojure.string/split-lines)
+       (map read-string)))
+
+(def answer1 (reduce + data))
