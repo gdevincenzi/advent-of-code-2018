@@ -22,7 +22,8 @@ Here are other example situations:
 +1, +1, -2 results in  0
 -1, -2, -3 results in -6
 ```
-- Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?
+- **Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?**
+
 
 ### Part 2
 You notice that the device repeats the same frequency change list over and over. To calibrate the device, you need to find the first frequency it reaches twice.
@@ -49,4 +50,4 @@ Here are other examples:
 +7, +7, -2, -7, -4 first reaches 14 twice.
 ```
 
-- What is the first frequency your device reaches twice?
+- **What is the first frequency your device reaches twice?**
