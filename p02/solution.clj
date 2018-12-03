@@ -7,8 +7,6 @@
 
 (defn checkX [x data] (map #(someX x %) data))
 
-(defn convert [data] (map #(if (true? %) 1 0) data))
-
 (defn countX [x data] (->> data
                          (checkX x)
                          (filter true?)
