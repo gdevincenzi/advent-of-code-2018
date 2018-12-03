@@ -7,12 +7,10 @@
 
 (defn checkX [x data] (map #(someX x %) data))
 
-(defn convert [data] (map #(if (true? %) 1 0) data))
-
 (defn countX [x data] (->> data
                          (checkX x)
-                         (convert)
-                         (reduce +)))
+                         (filter true?)
+                         (count)))
 
 (defn count2 [data] (countX 2 data))
 
@@ -24,10 +22,14 @@
 
 ;; part 2
 (defn strcomparemap [string1 string2]
-  (map #(not (= %1 %2)) string1 string2))
+  (map #(= %1 %2) string1 string2))
 
 (defn strfilter [string1 string2]
-  (= 1 (reduce + (convert (strcomparemap string1 string2)))))
+  (->> string2
+       (strcomparemap string1)
+       (filter false?)
+       (count)
+       (= 1)))
 
 (defn find-values [data]
   (for [x data y data :when (strfilter x y)] x))
@@ -36,4 +38,4 @@
   (let [[v1 v2] (find-values data)]
     (apply str (remove nil? (map #(if (= %1 %2) %1) v1 v2)))))
 
-(def answer2 (extract-anwser data))
+(def answer2 (extract-answer data))
