@@ -2,9 +2,6 @@
 
 (def data (slurp "./input.txt"))
 
-;(def data (slurp "./testinput.txt"))
-
-;;part 1
 (def re #"\[(\d+)-(\d+)-(\d+) (\d+):(\d+)\] (\w+) #?(\d+)?")
 
 (defn parse-entry [entry]
@@ -34,22 +31,33 @@
 
 (defn filter-times [guard-id data]
   (let [times (mapcat :slept (filter #(= (:id %) guard-id) data))
-        minute (first (first (sort-by #(second %) > (frequencies times))))]
-    {:id guard-id :total-slept (count times) :minute minute}))
+        freq (first (sort-by #(second %) > (frequencies times)))
+        minute (first freq)
+        frequency (second freq)]
+    {:id guard-id :total-slept (count times) :minute minute :frequency frequency}))
 
 (defn map-times [parsed-data]
   (map #(filter-times % parsed-data) (guard-ids parsed-data)))
 
-(defn solve1 [entry]
+(defn get-anwser [entry]
   (* (:id entry) (:minute entry)))
 
-(def answer1
+(def processed-data
   (->> data
        (clojure.string/split-lines)
        (map parse-entry)
        (sort-by (juxt :year :month :day :hour :minute))
        (extract-data)
-       (map-times)
+       (map-times)))
+
+(def answer1
+  (->> processed-data
        (sort-by :total-slept >)
        (first)
-       (solve1)))
+       (get-anwser)))
+
+(def answer2
+  (->> processed-data
+       (sort-by :frequency >)
+       (first)
+       (get-anwser)))
