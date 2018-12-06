@@ -1,6 +1,6 @@
 # Puzzle 03
 
-Source: https://adventofcode.com/2018/day/2
+Source: https://adventofcode.com/2018/day/3
 
 ### Part 1
 The whole piece of fabric they're working on is a very large square - at least 1000 inches on each side.
