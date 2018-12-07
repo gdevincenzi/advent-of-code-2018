@@ -1,9 +1,6 @@
 (ns p06.solution
   (:require [clojure.string :as str]))
 
-(def testinput
-  (str/split-lines (slurp "./testinput.txt")))
-
 (def input (str/split-lines (slurp "./input.txt")))
 
 (defn to-point [entry]
@@ -47,6 +44,7 @@
 (defn map-grid-to-points [points]
   (map #(closest-to % points) (makegrid points)))
 
+
 (def answer1
   (let [points (->> input (map to-point))]
     (->> points
@@ -57,3 +55,16 @@
          (sort-by val >)
          (first)
          (second))))
+
+(defn manhattan-sum [point points]
+  (reduce + (map #(manhattan point %1) points)))
+
+(defn map-grid-to-sizes [points]
+  (map #(manhattan-sum % points) (makegrid points)))
+
+(def answer2
+  (let [points (->> input (map to-point))]
+    (->> points
+         (map-grid-to-sizes)
+         (filter #(< % 10000))
+         (count))))
