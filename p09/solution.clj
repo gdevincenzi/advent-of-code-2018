@@ -1,5 +1,11 @@
 (ns p09.solution)
 
+(def input (re-seq #"\d+" (slurp "./input.txt")))
+
+(def players (read-string (first input)))
+
+(def limit (read-string (second input)))
+
 (defn rotate-ccw [circle]
   (let [{left :left
          current :current
@@ -46,3 +52,8 @@
                   (add-marble circle marble)))
               {:left '() :current 0 :right '()} (range 1 limit))
       (apply max (vals @score)))))
+
+
+(def answer1 (run-game players limit))
+
+(def answer2 (run-game players (* 100 limit)))
