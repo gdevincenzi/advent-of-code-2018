@@ -32,11 +32,28 @@
          (map apply-rule)
          (apply str))))
 
-(def answer1
-  (let [final-state (nth (iterate iterate-growth initial-state) 20)]
-    (->> final-state
-         (zipmap (range -20 (count final-state)))
-         (filter #(= (second %) \#))
-         (keys)
-         (reduce +))))
+(def total-for-nth
+  (memoize
+   (fn [n]
+     (let [final-state (nth (iterate iterate-growth initial-state) n)]
+       (->> final-state
+            (zipmap (range (- 0 n) (count final-state)))
+            (filter #(= (second %) \#))
+            (keys)
+            (reduce +))))))
+
+(def answer1 (total-for-nth 20))
+
+(defn extrapolate [n]
+  (let [diff (- (total-for-nth (inc n)) (total-for-nth n))
+        next-diff (- (total-for-nth (+ 2 n)) (total-for-nth (inc n)))]
+    (if (= diff next-diff)
+      [n diff (total-for-nth n)]
+      (recur (inc n)))))
+
+(def answer2
+  (let [[n diff count] (extrapolate 1)
+        remn (- 50000000000 n)]
+    (+ count (* diff remn))))
+
 
