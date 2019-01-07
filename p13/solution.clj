@@ -1,7 +1,6 @@
 (ns p13.solution)
 
 (def input (slurp "./input.txt"))
-(def input (slurp "./testinput.txt"))
 
 (defn build-keys [y]
   (map #(vec [%1 %2]) (iterate inc 0) (repeat y)))
@@ -15,17 +14,6 @@
        (map build-line (iterate inc 0))
        (reduce conj {})))
 
-(defn remove-spaces [parsed-tracks]
-  (->> parsed-tracks
-       (remove #(= \space (second %)))
-       (reduce conj {})))
-
-(defn remove-carts [tracks]
-  (->> tracks
-       (find-carts)
-       (carts-to-tracks)
-       (apply assoc tracks)))
-
 (defn carts-to-tracks [carts]
   (mapcat #(if (contains? #{\v \^} (second %)) [(first %) \|] [(first %) \-]) carts))
 
@@ -37,13 +25,33 @@
 
 (defn parse-cart [cart-data]
   (let [[c d] cart-data
-       dir (get {\^ 0 \> 1 \v 2 \< 3} d)]
-       {:pos c :dir dir :turn-count 0}))
+        dir (get {\^ 0 \> 1 \v 2 \< 3} d)]
+    {:pos c :dir dir :turn-count 0}))
 
 (defn parse-carts [tracks]
   (->> tracks
        (find-carts)
        (map parse-cart)))
+
+(defn remove-spaces [parsed-tracks]
+  (->> parsed-tracks
+       (remove #(= \space (second %)))
+       (reduce conj {})))
+
+(defn remove-carts [tracks]
+  (->> tracks
+       (find-carts)
+       (carts-to-tracks)
+       (apply assoc tracks)))
+
+(def parsed-tracks (parse-tracks input))
+
+(def carts (parse-carts parsed-tracks))
+
+(def tracks
+  (->> parsed-tracks
+       (remove-spaces)
+       (remove-carts)))
 
 (def cart-moves
   {0 (fn [[x y]] [x (dec y)])      ;; ^ - up
@@ -119,3 +127,26 @@
       next-tick)))
 
 (def answer1 (advance-to-crash carts))
+
+(defn advance-tick-and-remove-crashes
+  ([carts] (advance-tick-and-remove-crashes '() (sort-by second (sort-by first carts))))
+  ([acc remn]
+   (let [current-state (concat acc remn)
+         positions (map :pos current-state)
+         crashes (into #{} (map first (filter #(> (second %) 1) (frequencies positions))))]
+     (cond
+       (not (empty? crashes)) (let [new-acc (remove #(contains? crashes (:pos %)) acc)
+                                    new-remn (remove #(contains? crashes (:pos %)) remn)]
+                                (if (empty? remn)
+                                  new-acc
+                                  (recur (conj new-acc (process-cart (first new-remn))) (rest new-remn))))
+       (empty? remn) acc
+       :else (recur (conj acc (process-cart (first remn))) (rest remn))))))
+
+(defn advance-to-last [carts]
+  (let [next-tick (advance-tick-and-remove-crashes carts)]
+    (if (= 1 (count next-tick))
+      (:pos (first next-tick))
+      (recur next-tick))))
+
+(def answer2 (advance-to-last carts))
