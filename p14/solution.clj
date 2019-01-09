@@ -29,36 +29,27 @@
        (apply str)
        (read-string)))
 
+(def possible-recipes
+  (zipmap
+   (for [x (range 0 10) y (range 0 10)] (+ x y))
+   (map
+    #(vec (apply make-new-recipes %))
+    (for [x (range 0 10) y (range 0 10)] [x y]))))
+
 (def vector-input
   (vec (map #(read-string (str %)) (str input))))
 
 (def input-size (count vector-input))
 
-(def strinput (str input))
-
-(defn find-recipe [data]
-  (let [new-data (create-recipes data)
-        last-recipes (apply str (take-last input-size (:recipes new-data)))]
-    (if (= last-recipes strinput)
-      (:recipes new-data)
-      (recur new-data))))
-
 (defn find-recipe [r elf1 elf2]
-  (let [^long r1 (r elf1)
-        ^long r2 (r elf2)
-        new-recipes (make-new-recipes r1 r2)
-        recipes (apply conj r new-recipes)
+  (let [r1 (r elf1)
+        r2 (r elf2)
+        recipes (apply conj r (possible-recipes (+ r1 r2)))
         total (count recipes)
-        last-recipes (subvec recipes (- total input-size))]
-    (if (= last-recipes vector-input)
-      (- total input-size)
-      (recur recipes (mod (+ elf1 (inc r1)) total) (mod (+ elf2 (inc r2)) total)))))
+        tailsize (- total input-size)]
+    (cond
+      (and (>= tailsize 0) (= (subvec recipes tailsize) vector-input)) tailsize
+      (and (> tailsize 0) (= (subvec recipes (dec tailsize) (dec total)) vector-input)) (dec tailsize)
+      :else (recur recipes (mod (+ elf1 (inc r1)) total) (mod (+ elf2 (inc r2)) total)))))
 
-
-(defn find-recipe [data]
-  (let [new-data (create-recipes data)
-        recipes (:recipes new-data)
-        last-recipes (subvec recipes (- (count recipes) input-size))]
-    (if (= last-recipes vector-input)
-      (- (count recipes) input-size)
-      (recur new-data))))
+(def answer2 (find-recipe [3 7 1 0] 0 1))
